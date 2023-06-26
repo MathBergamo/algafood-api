@@ -7,8 +7,8 @@ import javax.persistence.*;
 
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@Entity(name = "cozinha")
-public class Cozinha {
+@Entity(name = "forma_pagamento")
+public class FormaPagamento {
 
     @EqualsAndHashCode.Include
     @Id
@@ -16,5 +16,5 @@ public class Cozinha {
     private Long id;
 
     @Column(nullable = false)
-    private String nome;
+    private String descricao;
 }
