@@ -1,6 +1,8 @@
 package com.algaworks.algafood.api.controller;
 
 import com.algaworks.algafood.api.controller.model.CozinhasXmlWrapper;
+import com.algaworks.algafood.domain.exception.EntidadeEmUsoException;
+import com.algaworks.algafood.domain.exception.EntidadeNaoEncontradaException;
 import com.algaworks.algafood.domain.model.Cozinha;
 import com.algaworks.algafood.domain.repository.CozinhaRepository;
 import com.algaworks.algafood.domain.service.CadastroCozinhaService;
@@ -57,9 +59,9 @@ public class CozinhaController {
     public ResponseEntity<Cozinha> atualizar(@PathVariable Long id, @RequestBody Cozinha cozinha) {
         Cozinha cozinhaAtual = cozinhaRepository.buscar(id);
 
-        if (cozinhaAtual != null){
+        if (cozinhaAtual != null) {
             cozinhaAtual.setNome(cozinha.getNome());
-            BeanUtils.copyProperties(cozinha,cozinhaAtual, "id");
+            BeanUtils.copyProperties(cozinha, cozinhaAtual, "id");
 
             cozinhaRepository.salvar(cozinhaAtual);
 
@@ -70,18 +72,21 @@ public class CozinhaController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Cozinha> remover(@PathVariable Long id){
+    public ResponseEntity<Cozinha> remover(@PathVariable Long id) {
         Cozinha cozinha = cozinhaRepository.buscar(id);
 
         try {
-            if (cozinha != null){
-                cozinhaRepository.remover(cozinha);
-                return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-            }
-        } catch (DataIntegrityViolationException e){
+
+            cadastroCozinhaService.excluir(id);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+
+        } catch (EntidadeNaoEncontradaException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+
+        } catch (EntidadeEmUsoException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
-
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
+
 }
+
